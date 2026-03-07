@@ -29,12 +29,12 @@ contract RootPay is ReentrancyGuard {
      * @dev Represents a payment channel between a payer and a merchant.
      */
     struct Channel {
-        address token;                      // Token address, address(0) for native currency
-        bytes32 merkleRoot;                 // Merkle root committed at channel creation
-        uint256 amount;                     // Total deposit in the payment channel
-        uint16 treeSize;                    // Number of leaves in the Merkle tree (must be power of 2)
+        address token; // Token address, address(0) for native currency
+        bytes32 merkleRoot; // Merkle root committed at channel creation
+        uint256 amount; // Total deposit in the payment channel
+        uint16 treeSize; // Number of leaves in the Merkle tree (must be power of 2)
         uint64 merchantWithdrawAfterBlocks; // Block number after which the merchant can withdraw
-        uint64 payerWithdrawAfterBlocks;    // Block number after which the payer can reclaim funds
+        uint64 payerWithdrawAfterBlocks; // Block number after which the payer can reclaim funds
     }
 
     // payer -> merchant -> token -> channel
@@ -75,11 +75,7 @@ contract RootPay is ReentrancyGuard {
         uint64 merchantWithdrawAfterBlocks
     );
     event ChannelRedeemed(
-        address indexed payer,
-        address indexed merchant,
-        address token,
-        uint256 amountPaid,
-        uint16 leafIndex
+        address indexed payer, address indexed merchant, address token, uint256 amountPaid, uint16 leafIndex
     );
     event ChannelRefunded(address indexed payer, address indexed merchant, address token, uint256 refundAmount);
     event ChannelReclaimed(address indexed payer, address indexed merchant, address token, uint64 blockNumber);
@@ -111,12 +107,11 @@ contract RootPay is ReentrancyGuard {
      * @param proof        The Merkle proof (sibling hashes, leaf to root).
      * @return True if the proof is valid against the root.
      */
-    function verifyMerkleProof(
-        bytes32 merkleRoot,
-        uint16 leafIndex,
-        bytes32 secret,
-        bytes32[] calldata proof
-    ) public pure returns (bool) {
+    function verifyMerkleProof(bytes32 merkleRoot, uint16 leafIndex, bytes32 secret, bytes32[] calldata proof)
+        public
+        pure
+        returns (bool)
+    {
         bytes32 computed = computeLeaf(leafIndex, secret);
         uint256 index = leafIndex;
 
@@ -214,14 +209,7 @@ contract RootPay is ReentrancyGuard {
         IERC20Permit(token).permit(payer, address(this), amount, deadline, v, r, s);
         _createERC20Channel(payer, token, amount);
         _initChannel(
-            payer,
-            merchant,
-            token,
-            merkleRoot,
-            amount,
-            treeSize,
-            merchantWithdrawAfterBlocks,
-            payerWithdrawAfterBlocks
+            payer, merchant, token, merkleRoot, amount, treeSize, merchantWithdrawAfterBlocks, payerWithdrawAfterBlocks
         );
 
         emit ChannelCreated(payer, merchant, token, amount, treeSize, merchantWithdrawAfterBlocks);
@@ -243,13 +231,10 @@ contract RootPay is ReentrancyGuard {
      * @param secret     The secret pre-image for the leaf at leafIndex.
      * @param proof      The Merkle proof for the leaf (sibling hashes, leaf to root).
      */
-    function redeemChannel(
-        address payer,
-        address token,
-        uint16 leafIndex,
-        bytes32 secret,
-        bytes32[] calldata proof
-    ) public nonReentrant {
+    function redeemChannel(address payer, address token, uint16 leafIndex, bytes32 secret, bytes32[] calldata proof)
+        public
+        nonReentrant
+    {
         require(payer != address(0), "Invalid address");
 
         Channel storage channel = channelsMapping[payer][msg.sender][token];
@@ -328,12 +313,10 @@ contract RootPay is ReentrancyGuard {
     /**
      * @dev Validates channel state and Merkle proof before redemption.
      */
-    function _validateRedeemChannel(
-        Channel storage channel,
-        uint16 leafIndex,
-        bytes32 secret,
-        bytes32[] calldata proof
-    ) internal view {
+    function _validateRedeemChannel(Channel storage channel, uint16 leafIndex, bytes32 secret, bytes32[] calldata proof)
+        internal
+        view
+    {
         if (channel.amount == 0) {
             revert ChannelDoesNotExistOrWithdrawn();
         }
@@ -390,9 +373,12 @@ contract RootPay is ReentrancyGuard {
             revert AddressIsNotContract(token);
         }
 
-        try IERC20(token).totalSupply() returns (uint256) {
-            // Lightweight ERC-20 sanity check
-        } catch {
+        try IERC20(token).totalSupply() returns (
+            uint256
+        ) {
+        // Lightweight ERC-20 sanity check
+        }
+        catch {
             revert AddressIsNotERC20(token);
         }
 
