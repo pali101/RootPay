@@ -171,7 +171,9 @@ contract RootPay is ReentrancyGuard {
             payerWithdrawAfterBlocks
         );
 
-        emit ChannelCreated(msg.sender, merchant, token, amount, treeSize, merchantWithdrawAfterBlocks);
+        emit ChannelCreated(
+            msg.sender, merchant, token, amount, treeSize, uint64(block.number) + merchantWithdrawAfterBlocks
+        );
     }
 
     /**
@@ -212,7 +214,9 @@ contract RootPay is ReentrancyGuard {
             payer, merchant, token, merkleRoot, amount, treeSize, merchantWithdrawAfterBlocks, payerWithdrawAfterBlocks
         );
 
-        emit ChannelCreated(payer, merchant, token, amount, treeSize, merchantWithdrawAfterBlocks);
+        emit ChannelCreated(
+            payer, merchant, token, amount, treeSize, uint64(block.number) + merchantWithdrawAfterBlocks
+        );
     }
 
     // -------------------------------------------------------------------------
