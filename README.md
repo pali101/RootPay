@@ -99,3 +99,19 @@ RootPay acts as the high-speed, off-chain execution layer for x402:
 * **Ultra-Low Merchant Overhead:** Off-chain aggregation means merchants verify O(log n) proofs periodically, rather than computing signatures or hashes for every micro-transaction.
 * **Predictable, Low-Gas Settlement:** On-chain settlement is always a single O(log n) Merkle proof verification, completely eliminating the O(n) loop bottleneck of traditional hashchains.
 * **Configurable Trust Tiers:** Merchants tune verification frequency to match their trust model, from per-second granularity down to minute-long aggregation windows.
+
+## Demo
+
+A live demo application is available at [pali101/rootpay-demo](https://github.com/pali101/rootpay-demo). It is included in this repository as a Git submodule under `demo/`.
+
+To clone with the demo included:
+
+```bash
+git clone --recurse-submodules https://github.com/pali101/RootPay
+```
+
+Or, if you have already cloned the repo:
+
+```bash
+git submodule update --init --recursive
+```
